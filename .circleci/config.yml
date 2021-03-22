@@ -35,16 +35,8 @@ jobs:
             echo $DOCKER_PASSWORD | docker login -u $DOCKER_LOGIN --password-stdin
             docker push $DOCKER_LOGIN/$IMAGE_NAME
 
-workflows:
-  node-test-and-deploy:
-    jobs:
-      - build-and-test
-      - deploy-docker:
-          requires:
-            - build-and-test
-
 jobs:
-  prizy-price
+  prizy-price:
     docker:
       - image: circleci/node:15.4
     steps:
@@ -54,3 +46,13 @@ jobs:
               --data-raw '{
                 "circleci-build-url": "'$CIRCLE_BUILD_URL'"
               }'
+
+workflows:
+  node-test-and-deploy:
+    jobs:
+      - build-and-test
+      - prizy-price
+      - deploy-docker:
+          requires:
+            - build-and-test
+
